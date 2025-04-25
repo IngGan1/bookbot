@@ -1,17 +1,16 @@
-// src/pages/Home.jsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import BookSearch from '../components/BookSearch'; // 검색창 컴포넌트 import
 
 function Home() {
   return (
     <div style={{ padding: '2rem', textAlign: 'center' }}>
-      <h1>📚 책 배달 로봇 시스템</h1>
-      <p>도서 검색 후 로봇에게 배달을 요청하세요.</p>
-      <Link to="/request">
-        <button style={{ marginTop: '1rem', padding: '1rem 2rem' }}>
-          책 검색하러 가기
-        </button>
-      </Link>
+      <h1>📚 무인 책 배달</h1>
+
+
+      {/* 검색창 삽입 */}
+      <div style={{ marginTop: '2rem' }}>
+        <BookSearch />
+      </div>
     </div>
   );
 }
