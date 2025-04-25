@@ -1,5 +1,5 @@
 import React from 'react';
-import BookSearch from '../components/BookSearch'; // 검색창 컴포넌트 import
+import BookSearch from '../components/BookSearch';
 
 function Home() {
   return (
