@@ -1,41 +1,72 @@
 import React, { useState } from 'react';
-function BookSearch() {
-    const [keyword, setKeyword] = useState('');
-    const [results, setResults] = useState([]);
-  
-    const handleSearch = async () => {
-      const dummyBooks = [
-        { title: '자바스크립트 완벽 가이드', author: 'David Flanagan' },
-        { title: '리액트 쉽게 배우기', author: '홍길동' },
-      ];
-      const filtered = dummyBooks.filter(book =>
-        book.title.includes(keyword)
-      );
-      setResults(filtered);
-    };
-  
-    return (
-      <div>
-        <input
-          type="text"
-          placeholder="책 제목이나 ISBN번호를 입력해주세요."
-          value={keyword}
-          onChange={e => setKeyword(e.target.value)}
-          style={{ padding: '0.5rem', width: '60%' }}
-        />
-        <button onClick={handleSearch} style={{ marginLeft: '1rem', padding: '0.5rem 1rem' }}>
-          검색
-        </button>
-  
-        <ul style={{ marginTop: '1rem' }}>
-          {results.map((book, idx) => (
-            <li key={idx}>
-              <strong>{book.title}</strong> - {book.author}
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
+import { createClient } from '@supabase/supabase-js';
 
-  export default BookSearch;
+// 1️⃣ Supabase 세팅
+const supabaseUrl = 'https://gpciixncyvljjqorxqea.supabase.co';
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwY2lpeG5jeXZsampxb3J4cWVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMjM5MDcsImV4cCI6MjA1OTc5OTkwN30.4-aRlLphU-hIT-vCiFl-kWqgUnw3WIOmX6CSC0LOXRw";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+function BookSearch() {
+  const [keyword, setKeyword] = useState('');
+  const [results, setResults] = useState([]);
+
+  // 2️⃣ 검색 + Supabase 저장
+  const handleSearch = async () => {
+    const serviceKey = 'UU7F9vP%2FYOkMpWTmb8B8JMJvQenLruoiBOYyfUaVngbhl1FMnbkDacJkAnwPS9BIj5vK4ZvHoz9FmS18y%2F1j3Q%3D%3D';
+    const url = `http://openapi-lib.sen.go.kr/openapi/service/lib/openApi?serviceKey=${serviceKey}&book_title=${encodeURIComponent(keyword)}`;
+    try {
+      const response = await fetch(url);
+      const textData = await response.text();
+
+      // XML -> JSON 변환
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(textData, "application/xml");
+      const items = Array.from(xml.getElementsByTagName('item'));
+
+      const books = items.map(item => ({
+        book_tilte: item.getElementsByTagName('book_tilte')[0]?.textContent ?? '',
+        book_author: item.getElementsByTagName('book_author')[0]?.textContent ?? '',
+      }));
+
+      setResults(books);
+
+      if (books.length > 0) {
+        // Supabase에 저장
+        const { data, error } = await supabase
+          .from('books')
+          .insert(books);
+
+        if (error) {
+          console.error('Supabase 저장 실패:', error.message);
+        } else {
+          console.log('Supabase 저장 성공:', data);
+        }
+      }
+
+    } catch (error) {
+      console.error('API 호출 오류:', error.message);
+    }
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        placeholder="책 제목을 입력하세요."
+        value={keyword}
+        onChange={e => setKeyword(e.target.value)}
+      />
+      <button onClick={handleSearch}>검색하고 저장하기</button>
+
+      <ul>
+        {results.map((book, idx) => (
+          <li key={idx}>
+            {book.book_tilte} - {book.book_author}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default BookSearch;
