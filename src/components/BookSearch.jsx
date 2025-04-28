@@ -15,7 +15,7 @@ function BookSearch() {
     const serviceKey = 'UU7F9vP%2FYOkMpWTmb8B8JMJvQenLruoiBOYyfUaVngbhl1FMnbkDacJkAnwPS9BIj5vK4ZvHoz9FmS18y%2F1j3Q%3D%3D';
     const baseUrl = 'https://openapi-lib.sen.go.kr';
     const url = `${baseUrl}?serviceKey=${serviceKey}&title=${encodeURIComponent(keyword)}&numOfRows=10&pageNo=1`;
-    
+
     try {
       const response = await fetch(url);
       const textData = await response.text();
@@ -35,7 +35,7 @@ function BookSearch() {
       if (books.length > 0) {
         // Supabase에 저장
         const { data, error } = await supabase
-          .from('books')
+          .from('Robot_Table')
           .insert(books);
 
         if (error) {
