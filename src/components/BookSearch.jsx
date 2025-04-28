@@ -13,7 +13,9 @@ function BookSearch() {
   // 2️⃣ 검색 + Supabase 저장
   const handleSearch = async () => {
     const serviceKey = 'UU7F9vP%2FYOkMpWTmb8B8JMJvQenLruoiBOYyfUaVngbhl1FMnbkDacJkAnwPS9BIj5vK4ZvHoz9FmS18y%2F1j3Q%3D%3D';
-    const url = `http://openapi-lib.sen.go.kr/openapi/service/lib/openApi?serviceKey=${serviceKey}&book_title=${encodeURIComponent(keyword)}`;
+    const baseUrl = 'https://openapi-lib.sen.go.kr';
+    const url = `${baseUrl}?serviceKey=${serviceKey}&title=${encodeURIComponent(keyword)}&numOfRows=10&pageNo=1`;
+    
     try {
       const response = await fetch(url);
       const textData = await response.text();
