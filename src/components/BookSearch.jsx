@@ -13,7 +13,7 @@ function BookSearch() {
   // 2️⃣ 검색 + Supabase 저장
   const handleSearch = async () => {
     const serviceKey = 'UU7F9vP%2FYOkMpWTmb8B8JMJvQenLruoiBOYyfUaVngbhl1FMnbkDacJkAnwPS9BIj5vK4ZvHoz9FmS18y%2F1j3Q%3D%3D';
-    const baseUrl = 'https://openapi-lib.sen.go.kr';
+    const baseUrl = 'https://www.data.go.kr/tcs/dss/selectApiDataDetailView.do?publicDataPk=15001051';
     const url = `${baseUrl}?serviceKey=${serviceKey}&title=${encodeURIComponent(keyword)}&numOfRows=10&pageNo=1`;
 
     try {
