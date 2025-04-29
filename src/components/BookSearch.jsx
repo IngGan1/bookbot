@@ -1,52 +1,68 @@
 import React, { useState } from 'react';
+import axios from 'axios'; // axios import 추가
 import { createClient } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom'; // navigate 사용하려면 필요
 
 // 1️⃣ Supabase 세팅
 const supabaseUrl = 'https://gpciixncyvljjqorxqea.supabase.co';
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwY2lpeG5jeXZsampxb3J4cWVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMjM5MDcsImV4cCI6MjA1OTc5OTkwN30.4-aRlLphU-hIT-vCiFl-kWqgUnw3WIOmX6CSC0LOXRw";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 function BookSearch() {
   const [keyword, setKeyword] = useState('');
-  const [results, setResults] = useState([]);
+  const [book, setBooks] = useState([]);
+  const navigate = useNavigate();
 
-  // 2️⃣ 검색 + Supabase 저장
-  const handleSearch = async () => {
-    const serviceKey = 'd3e907647cc7693a2b3ea28e2f3716eb';
-    const baseUrl = 'https://dapi.kakao.com/v2/search/web';
-    const url = `${baseUrl}?serviceKey=${serviceKey}&title=${encodeURIComponent(keyword)}&numOfRows=10&pageNo=1`;
+  // 2️⃣ Kakao API 설정
+  const KAKAO_KEY = "d3e907647cc7693a2b3ea28e2f3716eb";
+  const Kakao = axios.create({
+    baseURL: "https://dapi.kakao.com",
+    headers: {
+      Authorization: "KakaoAK " + KAKAO_KEY
+    }
+  });
 
+  const kakaoSearch = (params) => {
+    return Kakao.get("/v3/search/book", { params });
+  };
+
+  // 3️⃣ 책 검색 함수
+  const getBooks = async () => {
     try {
-      const response = await fetch(url);
-      const textData = await response.text();
+      if (keyword.trim() === "") {
+        setBooks([]);
+      } else {
+        const params = {
+          query: keyword,
+          size: 45
+        };
+        const result = await kakaoSearch(params);
 
-      // XML -> JSON 변환
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(textData, "application/xml");
-      const items = Array.from(xml.getElementsByTagName('item'));
+        if (result) {
+          setBooks(result.data.documents);
 
-      const books = items.map(item => ({
-        book_tilte: item.getElementsByTagName('book_tilte')[0]?.textContent ?? '',
-        book_author: item.getElementsByTagName('book_author')[0]?.textContent ?? '',
-      }));
+          // Supabase에 저장하고 싶으면 여기서 저장할 수 있음
+          // 예시로 첫 번째 결과만 저장한다고 해봄
+          const { data, error } = await supabase
+            .from('Robot_Table') // 테이블명
+            .insert([
+              { title: result.data.documents[0].title, authors: result.data.documents[0].authors.join(", ") }
+            ]);
 
-      setResults(books);
+          if (error) {
+            console.error('Supabase 저장 에러', error);
+          } else {
+            console.log('Supabase 저장 성공', data);
+          }
 
-      if (books.length > 0) {
-        // Supabase에 저장
-        const { data, error } = await supabase
-          .from('Robot_Table')
-          .insert(books);
-
-        if (error) {
-          console.error('Supabase 저장 실패:', error.message);
+          // 페이지 이동
+          navigate("/market", { state: result.data.documents });
         } else {
-          console.log('Supabase 저장 성공:', data);
+          console.log("검색 실패");
         }
       }
-
     } catch (error) {
-      console.error('API 호출 오류:', error.message);
+      console.log("에러", error);
     }
   };
 
@@ -54,17 +70,14 @@ function BookSearch() {
     <div>
       <input
         type="text"
-        placeholder="책 제목을 입력하세요."
         value={keyword}
-        onChange={e => setKeyword(e.target.value)}
+        onChange={(e) => setKeyword(e.target.value)}
+        placeholder="검색어 입력"
       />
-      <button onClick={handleSearch}>검색하고 저장하기</button>
-
+      <button onClick={getBooks}>검색</button>
       <ul>
-        {results.map((book, idx) => (
-          <li key={idx}>
-            {book.book_tilte} - {book.book_author}
-          </li>
+        {book.map((b, idx) => (
+          <li key={idx}>{b.title}</li>
         ))}
       </ul>
     </div>
