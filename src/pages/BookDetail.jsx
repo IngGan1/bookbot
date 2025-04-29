@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { createClient } from '@supabase/supabase-js';
 import { useLocation } from 'react-router-dom';
+
 
 // 1️⃣ Supabase 세팅
 const supabaseUrl = 'https://gpciixncyvljjqorxqea.supabase.co';

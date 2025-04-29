@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios'; // axios import 추가
 import { createClient } from '@supabase/supabase-js';
 import { useNavigate } from 'react-router-dom'; // navigate 사용하려면 필요
