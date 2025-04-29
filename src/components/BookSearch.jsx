@@ -47,7 +47,7 @@ function BookSearch() {
           const { data, error } = await supabase
             .from('Robot_Table') // 테이블명
             .insert([{ 
-               task_name: keyword, book_tilte: firstBook.title, book_author: firstBook.authors.join(", ")
+               task_name: keyword, thumbnail: firstBook.thumbnail, contents: firstBook.contents, book_tilte: firstBook.title, book_author: firstBook.authors.join(", ")
              }]);
 
           if (error) {
