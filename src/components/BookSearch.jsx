@@ -45,9 +45,9 @@ function BookSearch() {
           // 예시로 첫 번째 결과만 저장한다고 해봄
           const { data, error } = await supabase
             .from('Robot_Table') // 테이블명
-            .insert([
-              { title: result.data.documents[0].title, authors: result.data.documents[0].authors.join(", ") }
-            ]);
+            .insert([{ 
+              book_tlte: firstBook.title, book_tauthors: firstBook.authors.join(", ")
+             }]);
 
           if (error) {
             console.error('Supabase 저장 에러', error);
