@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'; // navigate 사용하려면 필�
 
 // 1️⃣ Supabase 세팅
 const supabaseUrl = 'https://gpciixncyvljjqorxqea.supabase.co';
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwY2lpeG5jeXZsampxb3J4cWVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQyMjM5MDcsImV4cCI6MjA1OTc5OTkwN30.4-aRlLphU-hIT-vCiFl-kWqgUnw3WIOmX6CSC0LOXRw";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 function BookSearch() {
