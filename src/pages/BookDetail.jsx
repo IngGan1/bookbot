@@ -1,23 +1,44 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { createClient } from '@supabase/supabase-js';
+
+// Supabase 세팅
+const supabaseUrl = 'https://gpciixncyvljjqorxqea.supabase.co';
+const supabaseKey = 'your_supabase_key'; // ⚠️ 실제 키로 유지
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 function BookDetail() {
   const location = useLocation();
-  const book = location.state;  // 전체 책 정보 받기
+  const book = location.state;
 
-  if (!book) return <div>책 정보가 없습니다.</div>;
+  useEffect(() => {
+    const saveBookToSupabase = async () => {
+      const { data, error } = await supabase
+        .from("Robot_Table")
+        .insert([
+          {
+            book_tlte: book.title,
+            book_author: book.authors.join(", "),
+            task_name: "book_selected"
+          }
+        ]);
+      if (error) {
+        console.error("Supabase 저장 에러", error);
+      } else {
+        console.log("Supabase 저장 성공", data);
+      }
+    };
+
+    if (book) saveBookToSupabase();
+  }, [book]);
 
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', padding: '20px' }}>
-      <img
-        src={book.thumbnail || 'https://via.placeholder.com/300'}
-        alt={book.book_tlte || book.title}
-        style={{ width: '300px', height: 'auto', marginRight: '20px' }}
-      />
+    <div style={{ display: "flex", padding: "20px" }}>
+      <img src={book.thumbnail} alt="책 표지" style={{ width: "200px", marginRight: "20px" }} />
       <div>
-        <h2>{book.book_tlte || book.title}</h2>
-        <h4>저자: {book.book_author || (book.authors && book.authors.join(', '))}</h4>
-        <p>{book.contents || '책 설명이 없습니다.'}</p>
+        <h2>{book.title}</h2>
+        <h4>{book.authors.join(", ")}</h4>
+        <p>{book.contents}</p>
       </div>
     </div>
   );
