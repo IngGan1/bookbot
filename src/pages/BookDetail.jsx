@@ -18,7 +18,7 @@ function BookDetail() {
         .insert([
           {
             book_tlte: book.title,
-            book_author: book.authors.join(", "),
+            book_author: Array.isArray(book.authors) ? book.authors.join(", ") : "저자 정보 없음",
             task_name: "book_selected"
           }
         ]);
