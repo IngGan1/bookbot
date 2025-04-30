@@ -8,7 +8,7 @@ function Market() {
 
   const goToDetail = (book) => {
     // Supabase 저장은 하지 않고 BookDetail로 이동만
-    navigate('/book-detail', { state: book });
+    navigate('/BookDetail', { state: book });
   };
 
   return (

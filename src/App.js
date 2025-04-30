@@ -6,7 +6,7 @@ import BookRequestForm from './components/BookRequestForm';
 import RequestStatus from './components/RequestStatus';
 import NotFound from './pages/NotFound';
 import BookDetail from './pages/BookDetail';
-import Market from './pages/Market';
+import Market from './pages/market';
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
         <Route path="/request" element={<BookRequestForm />} />
         <Route path="/status" element={<RequestStatus />} />
         <Route path="*" element={<NotFound />} />
-        <Route path="/bookdetail" element={<BookDetail />} />
+        <Route path="/BookDetail" element={<BookDetail />} />
         <Route path="/market" element={<Market />} />
       </Routes>
     </Router>
