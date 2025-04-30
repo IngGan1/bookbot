@@ -19,9 +19,10 @@ function BookDetail() {
       .insert([
         {
           book_title: book.title,
+          contents: book.contents,
           book_author: Array.isArray(book.authors) ? book.authors.join(", ") : "저자 정보 없음",
           book_thumbnail: book.thumbnail || "",
-          task_name: "book_selected"
+          task_name: "책상 번호"
         }
       ]);
 
