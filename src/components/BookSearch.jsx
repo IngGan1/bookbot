@@ -43,12 +43,12 @@ function BookSearch() {
 
           // Supabase에 저장하고 싶으면 여기서 저장할 수 있음
           // 예시로 첫 번째 결과만 저장한다고 해봄
-          const firstBook = result.data.documents[0];
-          const { data, error } = await supabase
-            .from('Robot_Table') // 테이블명
-            .insert([{ 
-               task_name: keyword, thumbnail: firstBook.thumbnail, contents: firstBook.contents, book_tilte: firstBook.title, book_author: firstBook.authors.join(", ")
-             }]);
+          //const firstBook = result.data.documents[0];
+          //const { data, error } = await supabase
+            //.from('Robot_Table') // 테이블명
+            //.insert([{ 
+              // task_name: keyword, thumbnail: firstBook.thumbnail, contents: firstBook.contents, book_tilte: firstBook.title, book_author: firstBook.authors.join(", ")
+             //}]);
 
           if (error) {
             console.error('Supabase 저장 에러', error);
