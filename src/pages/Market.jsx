@@ -32,7 +32,7 @@ function Market() {
               alt="책 이미지"
               width="100%"
             />
-            <h3>{book_title}</h3>
+            <h3>{book.title}</h3>
             <p>{Array.isArray(book.authors) ? book.authors.join(', ') : '저자 없음'}</p>
           </div>
         ))}
