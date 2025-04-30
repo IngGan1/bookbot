@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 
 function BookSearch() {
   const [keyword, setKeyword] = useState('');
-  const [book, setBooks] = useState([]);
   const navigate = useNavigate();
 
   const KAKAO_KEY = "d3e907647cc7693a2b3ea28e2f3716eb";
@@ -22,20 +21,20 @@ function BookSearch() {
   const getBooks = async () => {
     try {
       if (keyword.trim() === "") {
-        setBooks([]);
-      } else {
-        const params = {
-          query: keyword,
-          size: 45
-        };
-        const result = await kakaoSearch(params);
+        return;
+      }
 
-        if (result) {
-          setBooks(result.data.documents);
-          navigate("/market", { state: result.data.documents });
-        } else {
-          console.log("검색 실패");
-        }
+      const params = {
+        query: keyword,
+        size: 45
+      };
+      const result = await kakaoSearch(params);
+
+      if (result) {
+        // 검색 결과를 /market으로 넘기기
+        navigate("/market", { state: result.data.documents });
+      } else {
+        console.log("검색 실패");
       }
     } catch (error) {
       console.log("에러", error);
@@ -51,11 +50,6 @@ function BookSearch() {
         placeholder="책 이름, ISBN를 입력하세요"
       />
       <button onClick={getBooks}>검색</button>
-      <ul>
-        {book.map((b, idx) => (
-          <li key={idx}>{b.title}</li>
-        ))}
-      </ul>
     </div>
   );
 }
