@@ -41,9 +41,9 @@ function BookDetail() {
     <div style={{ display: "flex", padding: "20px" }}>
       <img src={book.thumbnail} alt="책 표지" style={{ width: "200px", marginRight: "20px" }} />
       <div>
-        <h2>{book.title}</h2>
-        <h4>{Array.isArray(book.authors) ? book.authors.join(", ") : "저자 정보 없음"}</h4>
-        <p>{book.contents}</p>
+        <h2>책 이름: {book.title}</h2>
+        <h4>저자: {Array.isArray(book.authors) ? book.authors.join(", ") : "저자 정보 없음"}</h4>
+        <p>개요: {book.contents}</p>
 
         <button onClick={saveBookToSupabase} style={{ marginTop: '20px' }}>
           책 선택
