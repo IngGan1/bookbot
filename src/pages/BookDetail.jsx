@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase 설정
@@ -9,6 +9,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 function BookDetail() {
   const location = useLocation();
+  const navigate = useNavigate();
   const book = location.state;
 
   const saveBookToSupabase = async () => {
@@ -38,17 +39,24 @@ function BookDetail() {
   if (!book) return <div>책 정보를 불러올 수 없습니다.</div>;
 
   return (
+    <div style={{ display: "flex", flexDirection: "column", padding: "20px" }}>
+    <button onClick={() => navigate(-1)} style={{ marginBottom: '20px' }}>
+      ← 뒤로가기
+    </button>
     <div style={{ display: "flex", padding: "20px" }}>
       <img src={book.thumbnail} alt="책 표지" style={{ width: "200px", marginRight: "20px" }} />
       <div>
         <h2>책 이름: {book.title}</h2>
         <h4>저자: {Array.isArray(book.authors) ? book.authors.join(", ") : "저자 정보 없음"}</h4>
-        <p>개요: {book.contents}</p>
+        <p style={{ maxHeight: '300px', overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
+          개요: {book.contents}
+        </p>
 
         <button onClick={saveBookToSupabase} style={{ marginTop: '20px' }}>
           책 선택
         </button>
       </div>
+    </div>
     </div>
   );
 }
