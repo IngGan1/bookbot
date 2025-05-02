@@ -1,39 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 function Market() {
   const location = useLocation();
   const navigate = useNavigate();
-  const books = location.state || [];
+  const initialBooks = location.state || [];
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [keyword, setKeyword] = useState('');
+  const [books, setBooks] = useState(initialBooks);
 
-  const goToDetail = (book) => {
-    navigate('/BookDetail', { state: book });
+  const KAKAO_KEY = "d3e907647cc7693a2b3ea28e2f3716eb";
+  const Kakao = axios.create({
+    baseURL: "https://dapi.kakao.com",
+    headers: {
+      Authorization: "KakaoAK " + KAKAO_KEY
+    }
+  });
+
+  const kakaoSearch = (params) => {
+    return Kakao.get("/v3/search/book", { params });
   };
 
-  // 검색어로 책 제목 또는 저자 필터링
-  const filteredBooks = books.filter((book) => {
-    const titleMatch = book.title?.toLowerCase().includes(searchQuery.toLowerCase());
-    const authorMatch = book.authors?.join(", ").toLowerCase().includes(searchQuery.toLowerCase());
-    return titleMatch || authorMatch;
-  });
+  const getBooks = async () => {
+    if (!keyword.trim()) return;
+    try {
+      const params = { query: keyword, size: 45 };
+      const result = await kakaoSearch(params);
+      setBooks(result.data.documents);
+    } catch (error) {
+      console.error("검색 에러:", error);
+    }
+  };
+
+  const goToDetail = (book) => {
+    navigate('/bookdetail', { state: book });
+  };
 
   return (
     <div style={{ padding: '20px' }}>
-      <h1>📚 검색 결과</h1>
+      <h1>📚 책 검색</h1>
 
-      {/* 🔍 검색창 */}
-      <input
-        type="text"
-        placeholder="책 제목 또는 저자 검색"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        style={{ width: '100%', padding: '10px', marginBottom: '20px', fontSize: '16px' }}
-      />
+      {/* 검색창 */}
+      <div style={{ marginBottom: '20px' }}>
+        <input
+          type="text"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+          placeholder="책 이름 또는 ISBN"
+          style={{ padding: '10px', fontSize: '16px', width: '70%' }}
+        />
+        <button onClick={getBooks} style={{ padding: '10px 20px', marginLeft: '10px' }}>
+          검색
+        </button>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
-        {filteredBooks.map((book, idx) => (
+        {books.map((book, idx) => (
           <div
             key={idx}
             style={{
