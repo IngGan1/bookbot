@@ -14,7 +14,11 @@ function BookSearch() {
   const getBooks = async () => {
     try {
       if (keyword.trim() === "") return;
-
+      
+    if (!apiUrl || !apiKey) {
+      alert("API URL 또는 KEY가 설정되지 않았습니다.");
+      return;
+    }
 
       const params = {
         query: keyword,
