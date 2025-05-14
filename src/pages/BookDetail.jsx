@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLibraryApi } from '../context/LibraryApiContext';
 
-const NewPage = () => {
+const BookDetail = () => {
   const { apiUrl, apiKey } = useLibraryApi(); // context에서 URL과 Key 가져오기
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(false);
