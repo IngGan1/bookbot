@@ -9,7 +9,7 @@ import BookDetail from './pages/BookDetail';
 import Market from './pages/Market';
 import { LibraryApiProvider } from "./context/LibraryApiContext";
 import LibrarySelector from "./components/LibrarySelector";
-import SearchBook from "./pages/SearchBook";
+import SearchBook from "./pages/LibrarySelector";
 
 function App() {
   return (
@@ -23,7 +23,7 @@ function App() {
             <Route path="/status" element={<RequestStatus />} />
             <Route path="/bookdetail" element={<BookDetail />} />
             <Route path="/market" element={<Market />} />
-            <Route path="/search" element={<SearchBook />} />
+            <Route path="/search" element={<LibrarySelector />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
