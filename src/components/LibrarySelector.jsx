@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLibraryApi } from "../context/LibraryApiContext";
-import supabase from "../db/supabese"; // ← 경로 주의! 오타 없음 확인!
+import supabase from "../db/supabase"; // ← 경로 주의! 오타 없음 확인!
 
 const LibrarySelector = () => {
   const { setApiUrl, setApiKey } = useLibraryApi();
