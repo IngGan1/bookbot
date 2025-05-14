@@ -38,7 +38,21 @@ function BookSearch() {
       console.log("에러", error);
     }
   };
+ const saveApiSettings = async () => {
+    if (!apiUrl || !apiKey) return;
 
+    const { data, error } = await supabase
+      .from('api')
+      .insert([
+        { URL: apiUrl, KEY: apiKey }
+      ]);
+
+    if (error) {
+      console.error('데이터베이스에 저장 오류:', error);
+    } else {
+      console.log('API 설정이 저장되었습니다:', data);
+    }
+  };
   return (
     <div>
       <input
