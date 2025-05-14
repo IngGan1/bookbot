@@ -22,6 +22,8 @@ function App() {
             <Route path="/status" element={<RequestStatus />} />
             <Route path="/bookdetail" element={<BookDetail />} />
             <Route path="/market" element={<Market />} />
+            <Route path="LibraryApiContext" element={<LibraryApiContext />} />
+            <Route path="/LibrarySelector" element={<LibrarySelector />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
