@@ -15,8 +15,6 @@ function BookSearch() {
     try {
       if (keyword.trim() === "") return;
 
-      // API 설정 Supabase에 저장
-      await saveApiSettings();
 
       const params = {
         query: keyword,
