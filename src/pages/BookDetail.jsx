@@ -1,64 +1,60 @@
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { createClient } from '@supabase/supabase-js';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useLibraryApi } from '../context/LibraryApiContext';
 
-// Supabase 설정
-const supabaseUrl = 'https://gpciixncyvljjqorxqea.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwY2lpeG5jeXZsampxb3J4cWVhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDIyMzkwNywiZXhwIjoyMDU5Nzk5OTA3fQ.Jj1JmWWjdERE2lqjyqNhdYPAh3rHqTXcYv1fW3mBp9g'; // 실제 서비스에서는 환경변수로 처리
-const supabase = createClient(supabaseUrl, supabaseKey);
+const NewPage = () => {
+  const { apiUrl, apiKey } = useLibraryApi(); // context에서 URL과 Key 가져오기
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-function BookDetail() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const book = location.state;
+  // 책 검색 함수
+  const getBooks = async () => {
+    if (!apiUrl || !apiKey) return; // API URL과 Key가 없으면 검색하지 않음
 
-  const saveBookToSupabase = async () => {
-    if (!book) return;
+    setLoading(true);
+    setError(null);
 
-    const { data, error } = await supabase
-      .from("Robot_Table")
-      .insert([
-        {
-          book_title: book.title,
-          contents: book.contents,
-          book_author: Array.isArray(book.authors) ? book.authors.join(", ") : "저자 정보 없음",
-          book_thumbnail: book.thumbnail || "",
-          task_name: "책상 번호"
-        }
-      ]);
-
-    if (error) {
-      console.error("Supabase 저장 에러", error.message);
-      alert("저장 실패: " + error.message);
-    } else {
-      console.log("Supabase 저장 성공", data);
-      alert("책 정보가 저장되었습니다!");
+    try {
+      const result = await axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      });
+      setBooks(result.data.documents || []); // API에서 받은 책 정보 설정
+    } catch (err) {
+      setError('책 정보를 가져오는 데 실패했습니다.');
+      console.error('책 검색 에러:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!book) return <div>책 정보를 불러올 수 없습니다.</div>;
+  // 페이지가 처음 렌더링될 때 API 호출
+  useEffect(() => {
+    getBooks();
+  }, [apiUrl, apiKey]); // apiUrl이나 apiKey가 변경되면 재호출
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", padding: "20px" }}>
-    <button onClick={() => navigate(-1)} style={{ marginBottom: '20px' }}>
-      ← 뒤로가기
-    </button>
-    <div style={{ display: "flex", padding: "20px" }}>
-      <img src={book.thumbnail} alt="책 표지" style={{ width: "200px", marginRight: "20px" }} />
+    <div>
+      <h1>책 정보</h1>
+      {loading && <p>책 정보를 불러오는 중...</p>}
+      {error && <p>{error}</p>}
       <div>
-        <h2>책 이름: {book.title}</h2>
-        <h4>저자: {Array.isArray(book.authors) ? book.authors.join(", ") : "저자 정보 없음"}</h4>
-        <p style={{ maxHeight: '300px', overflowY: 'auto', whiteSpace: 'pre-wrap' }}>
-          개요: {book.contents}
-        </p>
-
-        <button onClick={saveBookToSupabase} style={{ marginTop: '20px' }}>
-          책 선택
-        </button>
+        {books.length === 0 && !loading ? (
+          <p>책이 없습니다.</p>
+        ) : (
+          books.map((book, idx) => (
+            <div key={idx}>
+              <h3>{book.title}</h3>
+              <p>저자: {book.authors ? book.authors.join(', ') : '저자 정보 없음'}</p>
+              <p>출판사: {book.publisher || '출판사 정보 없음'}</p>
+            </div>
+          ))
+        )}
       </div>
     </div>
-    </div>
   );
-}
+};
 
 export default BookDetail;
