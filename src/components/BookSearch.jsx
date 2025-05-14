@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useLibraryApi } from '../context/LibraryApiContext'; // context에서 apiUrl과 apiKey 가져오기
-import supabase from '../db/supabase'; // supabase.js import
 
 function BookSearch() {
   const [keyword, setKeyword] = useState('');
@@ -10,19 +9,6 @@ function BookSearch() {
   const { apiUrl, apiKey } = useLibraryApi();
 
   // Supabase에 API URL과 KEY 저장
-  const saveApiSettings = async () => {
-    if (!apiUrl || !apiKey) return;
-
-    const { error } = await supabase
-      .from('api')
-      .insert([{ URL: apiUrl, KEY: apiKey }]);
-
-    if (error) {
-      console.error('API 설정 저장 실패:', error);
-    } else {
-      console.log('API 설정이 저장되었습니다.');
-    }
-  };
 
   // 책 검색 함수
   const getBooks = async () => {
