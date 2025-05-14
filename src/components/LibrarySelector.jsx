@@ -14,7 +14,7 @@ const LibrarySelector = () => {
     // Supabase에 저장
     if (url && key) {
       const { data, error } = await supabase
-        .from("API") // 테이블 이름: API
+        .from("api") // 테이블 이름: API
         .insert([{ URL: url, KEY: key }]); // 칼럼 이름: URL, KEY
 
       if (error) {
