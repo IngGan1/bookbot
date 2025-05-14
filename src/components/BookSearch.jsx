@@ -1,58 +1,59 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useLibraryApi } from '../context/LibraryApiContext'; // LibraryApiContext에서 가져오기
+import { useLibraryApi } from '../context/LibraryApiContext'; // context에서 apiUrl과 apiKey 가져오기
+import supabase from '../supabase'; // supabase.js import
 
 function BookSearch() {
   const [keyword, setKeyword] = useState('');
   const navigate = useNavigate();
-  const { apiUrl, apiKey } = useLibraryApi(); // context에서 apiUrl과 apiKey 가져오기
+  const { apiUrl, apiKey } = useLibraryApi();
 
+  // Supabase에 API URL과 KEY 저장
+  const saveApiSettings = async () => {
+    if (!apiUrl || !apiKey) return;
+
+    const { error } = await supabase
+      .from('api')
+      .insert([{ URL: apiUrl, KEY: apiKey }]);
+
+    if (error) {
+      console.error('API 설정 저장 실패:', error);
+    } else {
+      console.log('API 설정이 저장되었습니다.');
+    }
+  };
+
+  // 책 검색 함수
   const getBooks = async () => {
     try {
-      if (keyword.trim() === "") {
-        return;
-      }
+      if (keyword.trim() === "") return;
 
-      // 검색할 파라미터
+      // API 설정 Supabase에 저장
+      await saveApiSettings();
+
       const params = {
         query: keyword,
         size: 45
       };
 
-      // API 호출 (useLibraryApi에서 받은 apiUrl과 apiKey 사용)
       const result = await axios.get(apiUrl, {
         headers: {
-          Authorization: `Bearer ${apiKey}`, // API 인증 헤더
+          Authorization: `Bearer ${apiKey}`,
         },
         params: params
       });
 
       if (result) {
-        // 검색 결과를 /market으로 넘기기
         navigate("/market", { state: result.data.documents });
       } else {
         console.log("검색 실패");
       }
     } catch (error) {
-      console.log("에러", error);
+      console.log("에러:", error);
     }
   };
- const saveApiSettings = async () => {
-    if (!apiUrl || !apiKey) return;
 
-    const { data, error } = await supabase
-      .from('api')
-      .insert([
-        { URL: apiUrl, KEY: apiKey }
-      ]);
-
-    if (error) {
-      console.error('데이터베이스에 저장 오류:', error);
-    } else {
-      console.log('API 설정이 저장되었습니다:', data);
-    }
-  };
   return (
     <div>
       <input
