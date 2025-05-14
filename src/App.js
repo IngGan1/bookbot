@@ -7,19 +7,28 @@ import RequestStatus from './components/RequestStatus';
 import NotFound from './pages/NotFound';
 import BookDetail from './pages/BookDetail';
 import Market from './pages/Market';
+import { LibraryApiProvider } from "./context/LibraryApiContext";
+import LibrarySelector from "./components/LibrarySelector";
+import SearchBook from "./pages/SearchBook";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/request" element={<BookRequestForm />} />
-        <Route path="/status" element={<RequestStatus />} />
-        <Route path="*" element={<NotFound />} />
-        <Route path="/BookDetail" element={<BookDetail />} />
-        <Route path="/Market" element={<Market />} />
-      </Routes>
-    </Router>
+    <LibraryApiProvider>
+      <Router>
+        <div className="p-4">
+          <LibrarySelector />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/request" element={<BookRequestForm />} />
+            <Route path="/status" element={<RequestStatus />} />
+            <Route path="/BookDetail" element={<BookDetail />} />
+            <Route path="/Market" element={<Market />} />
+            <Route path="/search" element={<SearchBook />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </Router>
+    </LibraryApiProvider>
   );
 }
 
