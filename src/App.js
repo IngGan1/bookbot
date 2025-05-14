@@ -21,8 +21,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/request" element={<BookRequestForm />} />
             <Route path="/status" element={<RequestStatus />} />
-            <Route path="/BookDetail" element={<BookDetail />} />
-            <Route path="/Market" element={<Market />} />
+            <Route path="/bookdetail" element={<BookDetail />} />
+            <Route path="/market" element={<Market />} />
             <Route path="/search" element={<SearchBook />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

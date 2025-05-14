@@ -1,13 +1,20 @@
 import { createContext, useContext, useState } from "react";
-import { libraryApis } from "../api/libraryApis";
 
+// API URL과 Key를 관리할 Context
 const LibraryApiContext = createContext();
 
 export const LibraryApiProvider = ({ children }) => {
-  const [selectedLibrary, setSelectedLibrary] = useState(() => libraryApis.libA);
+  const [apiUrl, setApiUrl] = useState(""); // 기본값은 빈 문자열
+  const [apiKey, setApiKey] = useState(""); // 기본값은 빈 문자열
+
+  // API URL과 키를 설정하는 함수
+  const setLibraryApi = (url, key) => {
+    setApiUrl(url);
+    setApiKey(key);
+  };
 
   return (
-    <LibraryApiContext.Provider value={{ selectedLibrary, setSelectedLibrary }}>
+    <LibraryApiContext.Provider value={{ apiUrl, apiKey, setLibraryApi }}>
       {children}
     </LibraryApiContext.Provider>
   );
