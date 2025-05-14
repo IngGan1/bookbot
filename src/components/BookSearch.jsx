@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useLibraryApi } from '../context/LibraryApiContext'; // context에서 apiUrl과 apiKey 가져오기
-import supabase from '../supabase'; // supabase.js import
+import supabase from '../db/supabase'; // supabase.js import
 
 function BookSearch() {
   const [keyword, setKeyword] = useState('');
