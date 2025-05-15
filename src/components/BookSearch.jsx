@@ -12,7 +12,7 @@ function BookSearch() {
   const getAuthorizationHeader = (apiKey, apiName) => {
     switch (apiName) {
       case 'kakao':
-        return { Authorization: `KakaoAK ${apiKey}` };  // Kakao의 경우
+        return { Authorization: `KakaoAK ${String(apiKey)}` };  // Kakao의 경우
       case 'libraryAPI':
         return { Authorization: `Bearer ${apiKey}` };  // 다른 라이브러리 API의 경우
       case 'customAPI':
@@ -20,6 +20,9 @@ function BookSearch() {
       default:
         return {};  // 기본적으로 인증 없이 보내는 경우
     }
+    console.log("apiUrl:", apiUrl);
+    console.log("apiKey:", apiKey, typeof apiKey);
+    console.log("apiName:", apiName);
   };
 
   // 책 검색 함수
