@@ -1,25 +1,29 @@
-import React from 'react';
-import { Link } from 'react-router-dom'; // Link 추가
-import BookSearch from '../components/BookSearch';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useApi } from './ApiContext';
 
 function Home() {
+  const [url, setUrl] = useState('');
+  const [key, setKey] = useState('');
+  const { configureApi } = useApi();
+  const navigate = useNavigate();
+
+  const handleSave = () => {
+    if (!url || !key) {
+      alert("API URL과 KEY를 입력하세요.");
+      return;
+    }
+
+    configureApi(url, key);
+    navigate('/search'); // 설정 완료 후 검색 페이지로 이동
+  };
+
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
-      <h1>📚 무인 책 배달</h1>
-
-      {/* 검색창 삽입 */}
-      <div style={{ marginTop: '2rem' }}>
-        <BookSearch />
-      </div>
-
-      {/* 새로운 페이지로 이동하는 링크 */}
-      <div style={{ marginTop: '2rem' }}>
-        <Link to="/BookDetail">
-          <button style={{ padding: '0.5rem 1rem', fontSize: '1rem' }}>
-            책 정보 보기
-          </button>
-        </Link>
-      </div>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">🔧 API 설정</h1>
+      <input type="text" placeholder="API URL" value={url} onChange={e => setUrl(e.target.value)} className="border p-2 w-full mb-2" />
+      <input type="text" placeholder="API KEY" value={key} onChange={e => setKey(e.target.value)} className="border p-2 w-full mb-4" />
+      <button onClick={handleSave} className="bg-blue-500 text-white px-4 py-2 rounded">저장</button>
     </div>
   );
 }

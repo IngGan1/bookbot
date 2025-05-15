@@ -1,33 +1,31 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ApiProvider, useApi } from './ApiContext';
+import Home from './Home';
+import BookSearch from './BookSearch';
 
-import Home from './pages/Home';
-import BookRequestForm from './components/BookRequestForm';
-import RequestStatus from './components/RequestStatus';
-import NotFound from './pages/NotFound';
-import BookDetail from './pages/BookDetail';
-import Market from './pages/Market';
-import { LibraryApiProvider } from "./context/LibraryApiContext";
-import LibrarySelector from "./components/LibrarySelector";
+function ProtectedRoute({ children }) {
+  const { isConfigured } = useApi();
+  return isConfigured ? children : <Navigate to="/" replace />;
+}
 
 function App() {
   return (
-    <LibraryApiProvider>
+    <ApiProvider>
       <Router>
-        <div className="p-4">
-          <LibrarySelector />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/request" element={<BookRequestForm />} />
-            <Route path="/status" element={<RequestStatus />} />
-            <Route path="/bookdetail" element={<BookDetail />} />
-            <Route path="/market" element={<Market />} />
-            <Route path="/LibrarySelector" element={<LibrarySelector />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/search"
+            element={
+              <ProtectedRoute>
+                <BookSearch />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
       </Router>
-    </LibraryApiProvider>
+    </ApiProvider>
   );
 }
 
