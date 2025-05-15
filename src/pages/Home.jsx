@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApi } from './ApiContext';
+import { useApi } from '../context/ApiContext';
 
 function Home() {
   const [url, setUrl] = useState('');
