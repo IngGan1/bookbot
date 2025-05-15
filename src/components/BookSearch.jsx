@@ -1,28 +1,24 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useLibraryApi } from '../context/LibraryApiContext'; // context에서 apiUrl과 apiKey 가져오기
+import { useLibraryApi } from '../context/LibraryApiContext';
 
 function BookSearch() {
   const [keyword, setKeyword] = useState('');
   const navigate = useNavigate();
-  const { apiUrl, apiKey, apiName } = useLibraryApi();  // apiName을 가져옵니다.
+  const { apiUrl, apiKey, apiName } = useLibraryApi();
 
-  // 인증 헤더 생성 함수 (외부로 빼기)
   const getAuthorizationHeader = (apiKey, apiName) => {
     switch (apiName) {
       case 'kakao':
-        return { Authorization: `KakaoAK ${String(apiKey)}` };  // Kakao의 경우
+        return { Authorization: `KakaoAK ${apiKey}` };
       case 'libraryAPI':
-        return { Authorization: `Bearer ${apiKey}` };  // 다른 라이브러리 API의 경우
+        return { apikey: apiKey };  // 또는 { 'apikey': apiKey }
       case 'customAPI':
-        return { 'X-Custom-API-Key': apiKey };  // Custom API의 경우
+        return { 'X-Custom-API-Key': apiKey };
       default:
-        return {};  // 기본적으로 인증 없이 보내는 경우
+        return {};
     }
-    console.log("apiUrl:", apiUrl);
-    console.log("apiKey:", apiKey, typeof apiKey);
-    console.log("apiName:", apiName);
   };
 
   // 책 검색 함수
@@ -35,6 +31,10 @@ function BookSearch() {
         return;
       }
 
+      console.log("apiUrl:", apiUrl);
+      console.log("apiKey:", apiKey, typeof apiKey);
+      console.log("apiName:", apiName);
+
       const params = {
         query: keyword,
         size: 45
@@ -42,7 +42,6 @@ function BookSearch() {
 
       const authHeader = getAuthorizationHeader(apiKey, apiName);
 
-      // 책 검색 API 호출
       const result = await axios.get(apiUrl, {
         headers: authHeader,
         params: params
@@ -54,7 +53,7 @@ function BookSearch() {
         console.log("검색 실패");
       }
     } catch (error) {
-      console.log("에러:", error);
+      console.error("에러:", error.response?.data || error.message);
     }
   };
 
