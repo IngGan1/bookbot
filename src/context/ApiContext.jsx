@@ -1,3 +1,6 @@
+import React, { createContext, useState, useContext } from 'react';
+import { supabase } from './supabaseClient';
+
 const ApiContext = createContext();
 
 export const ApiProvider = ({ children }) => {
