@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ApiProvider, useApi } from './context/ApiContext';
-import Home from './Home';
-import BookSearch from './BookSearch';
+import Home from './pages/Home';
+import BookSearch from './pages/BookSearch';
 
 function ProtectedRoute({ children }) {
   const { isConfigured } = useApi();
