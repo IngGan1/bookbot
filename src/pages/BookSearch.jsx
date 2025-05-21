@@ -57,15 +57,38 @@ function BookSearch() {
         검색
       </button>
 
-      <div className="mt-4">
-        {results.map((book, index) => (
-          <div key={index} className="border p-2 mb-2">
-            <p><strong>제목:</strong> {book.title || '알 수 없음'}</p>
-            <p><strong>저자:</strong> {(book.authors && book.authors.join(', ')) || book.author || '알 수 없음'}</p>
+     <div className="mt-4">
+  {results.map((book, index) => (
+    <div key={index} className="flex border rounded-lg p-4 mb-4 shadow-md">
+      {/* 책 이미지 */}
+      <div className="w-32 h-44 flex-shrink-0 bg-gray-100 overflow-hidden mr-4">
+        {book.thumbnail ? (
+          <img
+            src={book.thumbnail}
+            alt="책 이미지"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+            이미지 없음
           </div>
-        ))}
+        )}
+      </div>
+
+      {/* 책 정보 */}
+      <div className="flex flex-col justify-between">
+        <div>
+          <p className="text-lg font-semibold mb-1">📕 제목: {book.title || '알 수 없음'}</p>
+          <p className="text-sm text-gray-700 mb-1">👤 저자: {(book.authors && book.authors.join(', ')) || book.author || '알 수 없음'}</p>
+        </div>
+        <p className="text-sm text-gray-600 mt-2">
+          📝 개요: {book.description || '설명이 없습니다.'}
+        </p>
       </div>
     </div>
+  ))}
+</div>
+</div>
   );
 }
 
