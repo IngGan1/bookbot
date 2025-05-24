@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { supabase } from './context/supabaseClient'; // 클라이언트 import
+import { supabase } from '../context/supabaseClient'; // 클라이언트 import
 
 function BookDetail() {
   const location = useLocation();
