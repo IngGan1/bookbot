@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { supabase } from '../context/supabaseClient'; // 클라이언트 import
+import { supabase } from './context/supabaseClient'; // 클라이언트 import
 
 function BookDetail() {
   const location = useLocation();
@@ -12,7 +12,7 @@ function BookDetail() {
   }
 
     const handleSaveToSupabase = async () => {
-    const { error } = await supabase.from('Robot_Table').insert([
+    const { error } = await supabase.from('Book_Table').insert([
       {
         book_title: book.title || null,
         book_author: book.authors?.join(', ') || book.author || null,
