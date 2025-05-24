@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient'; // 클라이언트 import
 
 function BookDetail() {
   const location = useLocation();
@@ -9,6 +10,25 @@ function BookDetail() {
   if (!book) {
     return <p>책 정보가 없습니다.</p>;
   }
+
+    const handleSaveToSupabase = async () => {
+    const { error } = await supabase.from('Robot_Table').insert([
+      {
+        book_title: book.title || null,
+        book_author: book.authors?.join(', ') || book.author || null,
+        book_isbn: book.isbn || null,
+        book_description: book.description || null,
+        book_thumbnail: book.thumbnail || null,
+      },
+    ]);
+
+    if (error) {
+      alert('저장 실패: ' + error.message);
+    } else {
+      alert('Supabase에 저장되었습니다!');
+    }
+  };
+
 
   return (
     <div className="p-6">
@@ -40,6 +60,11 @@ function BookDetail() {
           <p className="text-gray-700">
             📝 <strong>개요:</strong> {book.description || '설명이 없습니다.'}
           </p>
+
+          <button onClick = {handleSaveToSupabase}
+                className='mt-4 px-4 py-2 bg-blue-500 text-white rounded'>
+                 📥 책 선택
+                </button>
         </div>
       </div>
     </div>
