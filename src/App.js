@@ -3,11 +3,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ApiProvider, useApi } from './context/ApiContext';
 import Home from './pages/Home';
 import BookSearch from './pages/BookSearch';
+import BookDetail from './pages/BookDetail';
 
 function ProtectedRoute({ children }) {
   const { isConfigured } = useApi();
   return isConfigured ? children : <Navigate to="/" replace />;
 }
+
 
 function App() {
   return (
@@ -15,14 +17,18 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route
-            path="/search"
+          <Route path="/search"
             element={
               <ProtectedRoute>
                 <BookSearch />
               </ProtectedRoute>
-            }
-          />
+            }/>
+          <Route path="/detail"
+            element={
+              <ProtectedRoute>
+                <BookDetail />
+              </ProtectedRoute>
+            }/>
         </Routes>
       </Router>
     </ApiProvider>
