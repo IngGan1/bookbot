@@ -23,9 +23,9 @@ function BookDetail() {
     ]);
 
     if (error) {
-      alert('저장 실패: ' + error.message);
+      alert('저장이 실패했습니다. 사유: ' + error.message);
     } else {
-      alert('Supabase에 저장되었습니다!');
+      alert('책 정보가 저장되었습니다!');
     }
   };
 
