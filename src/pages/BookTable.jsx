@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../context/supabaseClient'; // 실제 경로에 맞게 수정
 
-function table({ userId }) {
+function BookTable({ userId }) {
   const [seats, setSeats] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,4 +53,4 @@ function table({ userId }) {
   );
 }
 
-export default table;
+export default BookTable;
