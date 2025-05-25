@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApi } from '../context/ApiContext';
+import HorizonLine from '../components/HorizonLine';
 
 function BookSearch() {
   const { apiUrl, apiKey, resetApi } = useApi();
