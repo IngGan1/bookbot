@@ -91,6 +91,7 @@ function BookSearch() {
               <p className="text-sm text-gray-600 mt-2">
                 📝 개요: {book.description || '설명이 없습니다.'}
               </p>
+              <HorizonLine />
             </div>
           </div>
         ))}

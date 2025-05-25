@@ -74,7 +74,6 @@ function BookDetail() {
           <p className="text-gray-700">
             📝 <strong>개요:</strong> {book.description || '설명이 없습니다.'}
           </p>
-          <HorizonLine />
         </div>
 
         <button
