@@ -27,7 +27,7 @@ function BookDetail() {
       alert('저장이 실패했습니다. 사유: ' + error.message);
     } else {
       alert('책 정보가 저장되었습니다!');
-      navigate('table');
+      navigate('Table');
     }
   };
 
