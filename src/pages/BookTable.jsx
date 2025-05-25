@@ -1,51 +1,68 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '../context/supabaseClient';
 
+const seatLayout = [
+  { id: 'A1', label: 'A1' },
+  { id: 'A2', label: 'A2' },
+  { id: 'A3', label: 'A3' },
+  { id: 'B1', label: 'B1' },
+  { id: 'B2', label: 'B2' },
+  { id: 'B3', label: 'B3' },
+  { id: 'C1', label: 'C1' },
+  { id: 'C2', label: 'C2' },
+  { id: 'C3', label: 'C3' },
+];
+
 function BookTable() {
-  const [seats, setSeats] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [selectedSeat, setSelectedSeat] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchSeats = async () => {
-      const { data, error } = await supabase
-        .from('user_table')  // 실제 테이블명
-        .select('*');        // 필요한 컬럼만 선택 가능, 예: 'seat_number, location, notes'
-      
-      if (error) {
-        alert('좌석 정보를 불러오지 못했습니다: ' + error.message);
-      } else {
-        setSeats(data);
-      }
-      setLoading(false);
-    };
+  const handleClick = async (seat) => {
+    setSelectedSeat(seat.id);
+    setLoading(true);
 
-    fetchSeats();
-  }, []);
+    const { data, error } = await supabase
+      .from('user_seat_selection') // 실제 테이블명에 맞게 수정하세요
+      .insert([{ tesk_id: seat.id, time: new Date() }]);
 
-  if (loading) return <p className="p-4">좌석 정보를 불러오는 중입니다...</p>;
-  if (seats.length === 0) return <p className="p-4">앉아야 할 자리가 없습니다.</p>;
+    setLoading(false);
+
+    if (error) {
+      alert('좌석 저장 실패: ' + error.message);
+      setSelectedSeat(null);
+    } else {
+      alert(`좌석 ${seat.label} 선택 완료!`);
+    }
+  };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">내가 앉아야 할 자리</h1>
-      <table className="min-w-full border border-gray-300">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border p-2">자리 번호</th>
-            <th className="border p-2">위치</th>
-            <th className="border p-2">추가 정보</th>
-          </tr>
-        </thead>
-        <tbody>
-          {seats.map((seat, idx) => (
-            <tr key={idx} className="text-center">
-              <td className="border p-2">{seat.seat_number || seat.task || '-'}</td>
-              <td className="border p-2">{seat.location || '-'}</td>
-              <td className="border p-2">{seat.notes || '-'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div style={{ padding: 20 }}>
+      <h1>좌석 배치도</h1>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 80px)', // 3열 그리드
+          gap: '10px',
+          maxWidth: '260px',
+        }}
+      >
+        {seatLayout.map((seat) => (
+          <button
+            key={seat.id}
+            onClick={() => handleClick(seat)}
+            style={{
+              padding: '15px',
+              backgroundColor: selectedSeat === seat.id ? '#4caf50' : '#ccc',
+              border: '1px solid #333',
+              borderRadius: '5px',
+              cursor: loading ? 'wait' : 'pointer',
+            }}
+            disabled={loading}
+          >
+            {seat.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
