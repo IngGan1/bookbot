@@ -4,7 +4,7 @@ import { ApiProvider, useApi } from './context/ApiContext';
 import Home from './pages/Home';
 import BookSearch from './pages/BookSearch';
 import BookDetail from './pages/BookDetail';
-import table from './pages/BookDetail';
+import table from './pages/table';
 
 function ProtectedRoute({ children }) {
   const { isConfigured } = useApi();
