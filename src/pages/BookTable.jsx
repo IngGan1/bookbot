@@ -9,7 +9,7 @@ function BookTable({ userId }) {
     const fetchSeats = async () => {
       // 예: userId로 내가 앉아야 할 자리 정보만 가져오기
       const { data, error } = await supabase
-        .from('Table')
+        .from('BookTable')
         .select('*')
         .eq('user_id', userId);  // user_id 컬럼 기준 필터
       
