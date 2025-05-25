@@ -23,7 +23,7 @@ function BookTable() {
 
     const { data, error } = await supabase
       .from('user_table') // 실제 테이블명에 맞게 수정하세요
-      .insert([{ tesk_id: seat.id, time: new Date() }]);
+      .insert([{ tesk_id: seat.id, time: new Date().toISOString() }]);
 
     setLoading(false);
 
