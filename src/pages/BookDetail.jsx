@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { supabase } from '../context/supabaseClient'; // 클라이언트 import
+import { supabase } from '../context/supabaseClient'; 
+import HorizonLine from '../components/HorizonLine';
 
 function BookDetail() {
   const location = useLocation();
@@ -73,6 +74,7 @@ function BookDetail() {
           <p className="text-gray-700">
             📝 <strong>개요:</strong> {book.description || '설명이 없습니다.'}
           </p>
+          <HorizonLine />
         </div>
 
         <button
