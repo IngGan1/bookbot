@@ -4,7 +4,7 @@ import { ApiProvider, useApi } from './context/ApiContext';
 import Home from './pages/Home';
 import BookSearch from './pages/BookSearch';
 import BookDetail from './pages/BookDetail';
-import Table from './pages/Table';
+import BookTable from './pages/BookTable';
 
 function ProtectedRoute({ children }) {
   const { isConfigured } = useApi();
@@ -33,7 +33,7 @@ function App() {
            <Route path="/Table"
              element={
             <ProtectedRoute>
-            <Table />
+            <BookTable />
              </ProtectedRoute>
               }/>
         </Routes>
