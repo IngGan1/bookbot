@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../context/supabaseClient'; // 실제 경로에 맞게 수정
 
-function SeatTable({ userId }) {
+function table({ userId }) {
   const [seats, setSeats] = useState([]);
   const [loading, setLoading] = useState(true);
 
