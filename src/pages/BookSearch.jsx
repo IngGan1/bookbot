@@ -9,50 +9,47 @@ function BookSearch() {
   const [results, setResults] = useState([]);
   const navigate = useNavigate();
 
-  const handleSearch = async () => {
-    try {
-      const headers = {
-        apikey: apiKey,
-        Authorization: `Bearer ${apiKey}`,
-      };
+const handleSearch = async () => {
+  try {
+    const headers = {
+      apikey: apiKey,
+      Authorization: `Bearer ${apiKey}`,
+    };
 
-      // kakao API 사용 시
-      if (apiUrl.includes('kakao')) {
-        headers['Authorization'] = `KakaoAK ${apiKey}`;
-        const queryParam = 'query';
-        const url = `${apiUrl}?${queryParam}=${encodeURIComponent(query.trim())}`;
-
-        const response = await fetch(url, { headers });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-        const data = await response.json();
-        setResults(data.documents || []);
-        return;
-      }
-
-      // Supabase REST API 사용 시
-      const baseUrl = apiUrl.replace(/\/+$/, '');
-      const endpoint = '/rest/v1/mybookapi';
-      const trimmedQuery = query.trim();
-   const trimmedQueryEncoded = encodeURIComponent(trimmedQuery);
-
-const filterQuery = `or=(title.ilike.*${trimmedQueryEncoded}*,author.ilike.*${trimmedQueryEncoded}*,authors.ilike.*${trimmedQueryEncoded}*,description.ilike.*${trimmedQueryEncoded}*)`;
-
-const url = `${baseUrl}${endpoint}?select=*` + `&${filterQuery}`;
+    if (apiUrl.includes('kakao')) {
+      headers['Authorization'] = `KakaoAK ${apiKey}`;
+      const queryParam = 'query';
+      const url = `${apiUrl}?${queryParam}=${encodeURIComponent(query.trim())}`;
 
       const response = await fetch(url, { headers });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
-
-      setResults(Array.isArray(data) ? data : []);
-    } catch (error) {
-      alert('검색 중 오류 발생');
-      console.error('Supabase 응답 오류:', error);
-      setResults([]);
+      setResults(data.documents || []);
+      return;
     }
-  };
 
+    const baseUrl = apiUrl.replace(/\/+$/, '');
+    const endpoint = '/rest/v1/mybookapi';
+    const trimmedQuery = query.trim();
+
+    const encodedQuery = encodeURIComponent(`%${trimmedQuery}%`);
+
+    const filterQuery = `or=(title.ilike.${encodedQuery},author.ilike.${encodedQuery},authors.ilike.${encodedQuery},description.ilike.${encodedQuery})`;
+
+    const url = `${baseUrl}${endpoint}?select=*&${filterQuery}`;
+
+    const response = await fetch(url, { headers });
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const data = await response.json();
+    setResults(Array.isArray(data) ? data : []);
+  } catch (error) {
+    alert('검색 중 오류 발생');
+    console.error('Supabase 응답 오류:', error);
+    setResults([]);
+  }
+};
   const handleReset = () => {
     resetApi();
     navigate('/');
