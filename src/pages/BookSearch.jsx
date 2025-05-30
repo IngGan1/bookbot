@@ -11,9 +11,10 @@ function BookSearch() {
 
 const handleSearch = async () => {
   try {
+    // supabase REST API용 헤더
     const headers = {
-      apikey: apiKey,
       Authorization: `Bearer ${apiKey}`,
+      // apikey 헤더는 중복일 수 있으니 생략 가능
     };
 
     if (apiUrl.includes('kakao')) {
@@ -33,22 +34,18 @@ const handleSearch = async () => {
     const endpoint = '/rest/v1/mybookapi';
     const trimmedQuery = query.trim();
 
-    // 점(.) 포함 컬럼명 배열
     const columns = ['book.title', 'book.author', 'book.authors', 'book.description'];
 
-    // 각 컬럼에 대해 큰따옴표 씌우고 ilike 필터 만들기
     const filterParts = columns.map(col => {
-      // 큰따옴표 포함해서 인코딩
       const encodedCol = encodeURIComponent(`"${col}"`);
-      // ilike의 검색 패턴도 작은따옴표 포함 인코딩
       const encodedLike = encodeURIComponent(`'%${trimmedQuery}%'`);
       return `${encodedCol}.ilike.${encodedLike}`;
     });
 
-    // or 조건 조합
     const filterQuery = `or=(${filterParts.join(',')})`;
 
-    const url = `${baseUrl}${endpoint}?select=*&${filterQuery}`;
+    // ★ 여기서 apikey를 쿼리 파라미터로 추가 ★
+    const url = `${baseUrl}${endpoint}?select=*&${filterQuery}&apikey=${apiKey}`;
 
     const response = await fetch(url, { headers });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
