@@ -95,10 +95,12 @@ const headers = {
             <div className="flex flex-col justify-between">
               <div>
                 <p className="text-lg font-semibold mb-1">📕 제목: {book.title || '알 수 없음'}</p>
-                <p className="text-sm text-gray-700 mb-1">
-                  👤 저자:{' '}
-                  {(book.authors && book.authors.join(', ')) || book.author || '알 수 없음'}
-                </p>
+              <p className="text-sm text-gray-700 mb-1">
+              👤 저자:{' '}
+              {Array.isArray(book.authors)
+                      ? book.authors.join(', ')
+                      : book.authors || book.author || '알 수 없음'}
+              </p>
               </div>
               <p className="text-sm text-gray-600 mt-2">📝 개요: {book.description || '설명이 없습니다.'}</p>
               <HorizonLine />
