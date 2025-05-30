@@ -16,7 +16,7 @@ function BookSearch() {
       let data;
 
       if (apiUrl.includes('kakao')) {
-        // Kakao API
+        // Kakao API 검색
         headers['Authorization'] = `KakaoAK ${apiKey}`;
         const queryParam = 'query';
         response = await fetch(`${apiUrl}?${queryParam}=${encodeURIComponent(query)}`, {
@@ -25,13 +25,20 @@ function BookSearch() {
         data = await response.json();
         setResults(data.documents || []);
       } else {
-        // Supabase REST API
+        // Supabase REST API 검색
         headers['apikey'] = apiKey;
         headers['Authorization'] = `Bearer ${apiKey}`;
-        const url = `${apiUrl}/rest/v1/mybookapi?select=*&title=ilike.*${encodeURIComponent(query)}*`;
+
+        // 부분 일치 검색: title, author, authors, description 포함
+        const url = `${apiUrl}/rest/v1/mybookapi?select=*` +
+                    `&or=(title.ilike.*${encodeURIComponent(query)}*` +
+                    `,author.ilike.*${encodeURIComponent(query)}*` +
+                    `,authors.ilike.*${encodeURIComponent(query)}*` +
+                    `,description.ilike.*${encodeURIComponent(query)}*)`;
+
         response = await fetch(url, { headers });
         data = await response.json();
-        setResults(data || []);
+        setResults(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       alert('검색 중 오류 발생');
@@ -70,7 +77,6 @@ function BookSearch() {
             onClick={() => navigate('/detail', { state: book })}
             className="flex border rounded-lg p-4 mb-4 shadow-md cursor-pointer hover:bg-gray-100"
           >
-            {/* 책 이미지 */}
             <div className="w-32 h-44 flex-shrink-0 bg-gray-100 overflow-hidden mr-4">
               {book.thumbnail ? (
                 <img
@@ -85,7 +91,6 @@ function BookSearch() {
               )}
             </div>
 
-            {/* 책 정보 */}
             <div className="flex flex-col justify-between">
               <div>
                 <p className="text-lg font-semibold mb-1">
