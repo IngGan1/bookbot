@@ -11,22 +11,8 @@ function BookSearch() {
 
 const handleSearch = async () => {
   try {
-    // supabase REST API용 헤더
-    const headers = {
-      Authorization: `Bearer ${apiKey}`,
-      // apikey 헤더는 중복일 수 있으니 생략 가능
-    };
-
-    if (apiUrl.includes('kakao')) {
-      headers['Authorization'] = `KakaoAK ${apiKey}`;
-      const queryParam = 'query';
-      const url = `${apiUrl}?${queryParam}=${encodeURIComponent(query.trim())}`;
-
-      const response = await fetch(url, { headers });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-      const data = await response.json();
-      setResults(data.documents || []);
+    if (!query.trim()) {
+      setResults([]);
       return;
     }
 
@@ -34,18 +20,21 @@ const handleSearch = async () => {
     const endpoint = '/rest/v1/mybookapi';
     const trimmedQuery = query.trim();
 
-    const columns = ['book.title', 'book.author', 'book.authors', 'book.description'];
+    const columns = ['title', 'author', 'authors', 'description'];
 
     const filterParts = columns.map(col => {
-      const encodedCol = encodeURIComponent(`"${col}"`);
-      const encodedLike = encodeURIComponent(`'%${trimmedQuery}%'`);
-      return `${encodedCol}.ilike.${encodedLike}`;
+      const encodedLike = encodeURIComponent(`%${trimmedQuery}%`);
+      return `${col}.ilike.${encodedLike}`;
     });
 
     const filterQuery = `or=(${filterParts.join(',')})`;
 
-    // ★ 여기서 apikey를 쿼리 파라미터로 추가 ★
-    const url = `${baseUrl}${endpoint}?select=*&${filterQuery}&apikey=${apiKey}`;
+    const url = `${baseUrl}${endpoint}?select=*&${filterQuery}`;
+
+    const headers = {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    };
 
     const response = await fetch(url, { headers });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
