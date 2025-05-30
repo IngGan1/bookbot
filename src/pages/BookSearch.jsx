@@ -11,53 +11,47 @@ function BookSearch() {
 
   const handleSearch = async () => {
     try {
-      const headers = {};
-      let response;
-      let data;
+      const headers = {
+        apikey: apiKey,
+        Authorization: `Bearer ${apiKey}`,
+      };
 
+      // kakao API 사용 시
       if (apiUrl.includes('kakao')) {
-        // Kakao API 검색
         headers['Authorization'] = `KakaoAK ${apiKey}`;
         const queryParam = 'query';
-        response = await fetch(`${apiUrl}?${queryParam}=${encodeURIComponent(query)}`, {
-          headers,
-        });
-        data = await response.json();
+        const url = `${apiUrl}?${queryParam}=${encodeURIComponent(query.trim())}`;
+
+        const response = await fetch(url, { headers });
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const data = await response.json();
         setResults(data.documents || []);
-      } else {
-        // Supabase REST API 검색
-
-        headers['apikey'] = apiKey;
-        headers['Authorization'] = `Bearer ${apiKey}`;
-
-        // apiUrl 끝에 슬래시가 있으면 제거
-        const baseUrl = apiUrl.replace(/\/+$/, '');
-
-        // 테이블 엔드포인트 경로
-        const endpoint = '/rest/v1/mybookapi';
-
-        // 쿼리 부분: 부분일치 검색(title, author, authors, description)
-        // Supabase는 ilike 연산자 사용 시, * 와 % 조심 (supabase는 % 와 * 모두 와일드카드 가능)
-        // encodeURIComponent는 전체 쿼리문에 직접 사용하면 안되고, 변수 부분만 인코딩해야 함
-        const escapedQuery = query.replace(/'/g, "''"); // 작은따옴표 escape
-
-        const filterQuery = `or=(title.ilike.*${escapedQuery}*,author.ilike.*${escapedQuery}*,authors.ilike.*${escapedQuery}*,description.ilike.*${escapedQuery}*)`;
-
-        const url = `${baseUrl}${endpoint}?select=*&${filterQuery}`;
-
-        response = await fetch(url, { headers });
-        data = await response.json();
-
-        if (!Array.isArray(data)) {
-          console.error('Supabase 응답 오류:', data);
-          setResults([]);
-        } else {
-          setResults(data);
-        }
+        return;
       }
+
+      // Supabase REST API 사용 시
+      const baseUrl = apiUrl.replace(/\/+$/, '');
+      const endpoint = '/rest/v1/mybookapi';
+
+      const trimmedQuery = query.trim();
+
+      // 부분 일치 or 조건 필터
+      const filterQuery = `or=(title.ilike.*${trimmedQuery}*,author.ilike.*${trimmedQuery}*,authors.ilike.*${trimmedQuery}*,description.ilike.*${trimmedQuery}*)`;
+
+      // filterQuery 전체 인코딩 적용
+      const url = `${baseUrl}${endpoint}?select=*` + `&${encodeURIComponent(filterQuery)}`;
+
+      const response = await fetch(url, { headers });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+
+      setResults(Array.isArray(data) ? data : []);
     } catch (error) {
       alert('검색 중 오류 발생');
-      console.error(error);
+      console.error('Supabase 응답 오류:', error);
+      setResults([]);
     }
   };
 
@@ -74,6 +68,7 @@ function BookSearch() {
           API 재설정
         </button>
       </div>
+
       <input
         type="text"
         placeholder="검색어 입력"
@@ -81,6 +76,7 @@ function BookSearch() {
         onChange={(e) => setQuery(e.target.value)}
         className="border p-2 w-full mb-2"
       />
+
       <button onClick={handleSearch} className="bg-green-500 text-white px-4 py-2 rounded">
         검색
       </button>
