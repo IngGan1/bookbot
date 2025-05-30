@@ -16,7 +16,9 @@ function BookDetail() {
     const { error } = await supabase.from('Book_Table').insert([
       {
         book_title: book.title || null,
-        book_author: book.authors?.join(', ') || book.author || null,
+        book_author: Array.isArray(book.authors)
+      ? book.authors.join(', ')
+      : book.authors || book.author || null,
         book_isbn: book.isbn || null,
         book_description: book.description || null,
         book_thumbnail: book.thumbnail || null,
@@ -59,10 +61,12 @@ function BookDetail() {
         </div>
 
         <div className="border p-4 rounded shadow-sm mb-4">
-          <p className="text-gray-700">
-            👤 <strong>저자:</strong>{' '}
-            {(book.authors && book.authors.join(', ')) || book.author || '알 수 없음'}
-          </p>
+        <p className="text-gray-700">
+  👤 <strong>저자:</strong>{' '}
+  {Array.isArray(book.authors)
+    ? book.authors.join(', ')
+    : book.authors || book.author || '알 수 없음'}
+</p>
         </div>
 
         <div className="border p-4 rounded shadow-sm mb-4">
