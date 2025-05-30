@@ -34,13 +34,11 @@ function BookSearch() {
       const baseUrl = apiUrl.replace(/\/+$/, '');
       const endpoint = '/rest/v1/mybookapi';
 
-      const trimmedQuery = query.trim();
+   const trimmedQueryEncoded = encodeURIComponent(trimmedQuery);
 
-      // 부분 일치 or 조건 필터
-      const filterQuery = `or=(title.ilike.*${trimmedQuery}*,author.ilike.*${trimmedQuery}*,authors.ilike.*${trimmedQuery}*,description.ilike.*${trimmedQuery}*)`;
+const filterQuery = `or=(title.ilike.*${trimmedQueryEncoded}*,author.ilike.*${trimmedQueryEncoded}*,authors.ilike.*${trimmedQueryEncoded}*,description.ilike.*${trimmedQueryEncoded}*)`;
 
-      // filterQuery 전체 인코딩 적용
-      const url = `${baseUrl}${endpoint}?select=*` + `&${encodeURIComponent(filterQuery)}`;
+const url = `${baseUrl}${endpoint}?select=*` + `&${filterQuery}`;
 
       const response = await fetch(url, { headers });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
