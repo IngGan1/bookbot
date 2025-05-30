@@ -22,18 +22,19 @@ const handleSearch = async () => {
 
     const columns = ['title', 'author', 'authors', 'description'];
 
-    const filterParts = columns.map(col => {
-      const encodedLike = encodeURIComponent(`%${trimmedQuery}%`);
-      return `${col}.ilike.${encodedLike}`;
-    });
+const filterParts = columns.map(col => {
+  const encodedLike = `%${trimmedQuery}%`;  // 여기서 encodeURIComponent는 하지 말고
+  return `${col}.ilike.${encodedLike}`;
+});
 
-    const filterQuery = `or=(${filterParts.join(',')})`;
+const filterQuery = `or=(${filterParts.join(',')})`;
+const encodedFilterQuery = encodeURIComponent(filterQuery);
 
-    const url = `${baseUrl}${endpoint}?select=*&${filterQuery}`;
+const url = `${baseUrl}${endpoint}?select=*&${encodedFilterQuery}`
 
-   const headers = {
-  apikey: apiKey,  // 꼭 들어가야 함
-  Authorization: `Bearer ${apiKey}`,  // 보통 같이 넣기도 함
+const headers = {
+  apikey: apiKey,
+  Authorization: `Bearer ${apiKey}`,
   'Content-Type': 'application/json',
 };
 
