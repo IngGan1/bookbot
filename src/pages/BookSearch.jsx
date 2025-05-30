@@ -9,37 +9,35 @@ function BookSearch() {
   const [results, setResults] = useState([]);
   const navigate = useNavigate();
 
-const handleSearch = async () => {
-  try {
-    const headers = {};
+  const handleSearch = async () => {
+    try {
+      const headers = {};
+      let response;
+      let data;
 
-    if (apiUrl.includes('kakao')) {
-      headers['Authorization'] = `KakaoAK ${apiKey}`;
-      const queryParam = 'query';
-      const response = await fetch(`${apiUrl}?${queryParam}=${encodeURIComponent(query)}`, {
-        headers,
-      });
-      const data = await response.json();
-      const books = data.documents || [];
-      setResults(books);
-
-    } else {
-      // Supabase REST API 쿼리 (예: 제목이 query와 같은 것 찾기)
-      headers['apikey'] = apiKey;
-      headers['Authorization'] = `Bearer ${apiKey}`;
-      const url = `${apiUrl}?select=*&title=eq.${encodeURIComponent(query)}`;
-      const response = await fetch(url, {
-        headers,
-      });
-      const data = await response.json();
-      // Supabase 결과는 배열로 바로 오므로 그대로 사용
-      setResults(data || []);
+      if (apiUrl.includes('kakao')) {
+        // Kakao API
+        headers['Authorization'] = `KakaoAK ${apiKey}`;
+        const queryParam = 'query';
+        response = await fetch(`${apiUrl}?${queryParam}=${encodeURIComponent(query)}`, {
+          headers,
+        });
+        data = await response.json();
+        setResults(data.documents || []);
+      } else {
+        // Supabase REST API
+        headers['apikey'] = apiKey;
+        headers['Authorization'] = `Bearer ${apiKey}`;
+        const url = `${apiUrl}/rest/v1/mybookapi?select=*&title=eq.${encodeURIComponent(query)}`;
+        response = await fetch(url, { headers });
+        data = await response.json();
+        setResults(data || []);
+      }
+    } catch (error) {
+      alert('검색 중 오류 발생');
+      console.error(error);
     }
-  } catch (error) {
-    alert('검색 중 오류 발생');
-    console.error(error);
-  }
-};
+  };
 
   const handleReset = () => {
     resetApi();
