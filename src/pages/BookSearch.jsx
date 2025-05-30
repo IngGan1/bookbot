@@ -33,7 +33,7 @@ function BookSearch() {
       // Supabase REST API 사용 시
       const baseUrl = apiUrl.replace(/\/+$/, '');
       const endpoint = '/rest/v1/mybookapi';
-
+      const trimmedQuery = query.trim();
    const trimmedQueryEncoded = encodeURIComponent(trimmedQuery);
 
 const filterQuery = `or=(title.ilike.*${trimmedQueryEncoded}*,author.ilike.*${trimmedQueryEncoded}*,authors.ilike.*${trimmedQueryEncoded}*,description.ilike.*${trimmedQueryEncoded}*)`;
