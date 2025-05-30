@@ -31,10 +31,11 @@ const handleSearch = async () => {
 
     const url = `${baseUrl}${endpoint}?select=*&${filterQuery}`;
 
-    const headers = {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    };
+   const headers = {
+  apikey: apiKey,  // 꼭 들어가야 함
+  Authorization: `Bearer ${apiKey}`,  // 보통 같이 넣기도 함
+  'Content-Type': 'application/json',
+};
 
     const response = await fetch(url, { headers });
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
