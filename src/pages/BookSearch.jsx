@@ -28,7 +28,7 @@ function BookSearch() {
         // Supabase REST API
         headers['apikey'] = apiKey;
         headers['Authorization'] = `Bearer ${apiKey}`;
-        const url = `${apiUrl}/rest/v1/mybookapi?select=*&title=eq.${encodeURIComponent(query)}`;
+        const url = `${apiUrl}/rest/v1/mybookapi?select=*&title=ilike.*${encodeURIComponent(query)}*`;
         response = await fetch(url, { headers });
         data = await response.json();
         setResults(data || []);
