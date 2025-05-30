@@ -33,9 +33,20 @@ const handleSearch = async () => {
     const endpoint = '/rest/v1/mybookapi';
     const trimmedQuery = query.trim();
 
-    const encodedQuery = encodeURIComponent(`%${trimmedQuery}%`);
+    // 점(.) 포함 컬럼명 배열
+    const columns = ['book.title', 'book.author', 'book.authors', 'book.description'];
 
-    const filterQuery = `or=(title.ilike.${encodedQuery},author.ilike.${encodedQuery},authors.ilike.${encodedQuery},description.ilike.${encodedQuery})`;
+    // 각 컬럼에 대해 큰따옴표 씌우고 ilike 필터 만들기
+    const filterParts = columns.map(col => {
+      // 큰따옴표 포함해서 인코딩
+      const encodedCol = encodeURIComponent(`"${col}"`);
+      // ilike의 검색 패턴도 작은따옴표 포함 인코딩
+      const encodedLike = encodeURIComponent(`'%${trimmedQuery}%'`);
+      return `${encodedCol}.ilike.${encodedLike}`;
+    });
+
+    // or 조건 조합
+    const filterQuery = `or=(${filterParts.join(',')})`;
 
     const url = `${baseUrl}${endpoint}?select=*&${filterQuery}`;
 
