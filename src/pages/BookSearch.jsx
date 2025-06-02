@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApi } from '../context/ApiContext';
+import { createClient } from '@supabase/supabase-js';
 import HorizonLine from '../components/HorizonLine';
+
+// Supabase 클라이언트 초기화 (환경에 맞게 수정)
+const supabaseUrl = 'https://<YOUR-SUPABASE-PROJECT>.supabase.co';
+const supabaseKey = '<YOUR-ANON-KEY>';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 function BookSearch() {
   const { apiUrl, apiKey, resetApi } = useApi();
@@ -9,49 +15,77 @@ function BookSearch() {
   const [results, setResults] = useState([]);
   const navigate = useNavigate();
 
-const handleSearch = async () => {
-  try {
-    if (!query.trim()) {
+  const handleSearch = async () => {
+    try {
+      if (!query.trim()) {
+        setResults([]);
+        return;
+      }
+
+      const baseUrl = apiUrl.replace(/\/+$/, '');
+      const endpoint = '/rest/v1/mybookapi';
+      const trimmedQuery = query.trim();
+
+      const columns = ['title', 'author', 'authors', 'description'];
+      const filterParts = columns.map(col => {
+        const encodedLike = `%${trimmedQuery}%`;
+        return `${col}.ilike.${encodedLike}`;
+      });
+
+      const filterQuery = `or=(${filterParts.join(',')})`;
+      const encodedFilterQuery = encodeURIComponent(filterQuery);
+
+      const url = `${baseUrl}${endpoint}?select=*&${encodedFilterQuery}`;
+
+      const headers = {
+        apikey: apiKey,
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      };
+
+      const response = await fetch(url, { headers });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      setResults(Array.isArray(data) ? data : []);
+    } catch (error) {
+      alert('검색 중 오류 발생');
+      console.error('Supabase 응답 오류:', error);
       setResults([]);
-      return;
     }
+  };
 
-    const baseUrl = apiUrl.replace(/\/+$/, '');
-    const endpoint = '/rest/v1/mybookapi';
-    const trimmedQuery = query.trim();
-
-    const columns = ['title', 'author', 'authors', 'description'];
-
-const filterParts = columns.map(col => {
-  const encodedLike = `%${trimmedQuery}%`;  // 여기서 encodeURIComponent는 하지 말고
-  return `${col}.ilike.${encodedLike}`;
-});
-
-const filterQuery = `or=(${filterParts.join(',')})`;
-const encodedFilterQuery = encodeURIComponent(filterQuery);
-
-const url = `${baseUrl}${endpoint}?select=*&${encodedFilterQuery}`
-
-const headers = {
-  apikey: apiKey,
-  Authorization: `Bearer ${apiKey}`,
-  'Content-Type': 'application/json',
-};
-
-    const response = await fetch(url, { headers });
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-    const data = await response.json();
-    setResults(Array.isArray(data) ? data : []);
-  } catch (error) {
-    alert('검색 중 오류 발생');
-    console.error('Supabase 응답 오류:', error);
-    setResults([]);
-  }
-};
   const handleReset = () => {
     resetApi();
     navigate('/');
+  };
+
+  // 책 클릭 시 x, y 저장 및 상세 페이지 이동
+  const handleBookClick = async (book) => {
+    try {
+      if (book.x === undefined || book.y === undefined) {
+        alert('이 책에는 x, y 정보가 없습니다.');
+        return;
+      }
+
+      const { error } = await supabase.from('robot_xy').insert([
+        {
+          x: book.x,
+          y: book.y,
+        },
+      ]);
+
+      if (error) {
+        console.error('Supabase 저장 오류:', error);
+        alert('위치 저장 실패');
+      } else {
+        console.log('위치 저장 성공');
+        navigate('/detail', { state: book });
+      }
+    } catch (err) {
+      console.error('책 클릭 처리 중 오류:', err);
+      alert('예기치 못한 오류');
+    }
   };
 
   return (
@@ -79,7 +113,7 @@ const headers = {
         {results.map((book, index) => (
           <div
             key={index}
-            onClick={() => navigate('/detail', { state: book })}
+            onClick={() => handleBookClick(book)}
             className="flex border rounded-lg p-4 mb-4 shadow-md cursor-pointer hover:bg-gray-100"
           >
             <div className="w-32 h-44 flex-shrink-0 bg-gray-100 overflow-hidden mr-4">
@@ -95,12 +129,12 @@ const headers = {
             <div className="flex flex-col justify-between">
               <div>
                 <p className="text-lg font-semibold mb-1">📕 제목: {book.title || '알 수 없음'}</p>
-              <p className="text-sm text-gray-700 mb-1">
-              👤 저자:{' '}
-              {Array.isArray(book.authors)
-                      ? book.authors.join(', ')
-                      : book.authors || book.author || '알 수 없음'}
-              </p>
+                <p className="text-sm text-gray-700 mb-1">
+                  👤 저자:{' '}
+                  {Array.isArray(book.authors)
+                    ? book.authors.join(', ')
+                    : book.authors || book.author || '알 수 없음'}
+                </p>
               </div>
               <p className="text-sm text-gray-600 mt-2">📝 개요: {book.description || '설명이 없습니다.'}</p>
               <HorizonLine />
