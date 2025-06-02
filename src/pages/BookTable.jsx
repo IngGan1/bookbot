@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { supabase } from '../context/supabaseClient';
 
 const seatLayout = [
-  { id: 'A1', label: 'A1' },
-  { id: 'A2', label: 'A2' },
-  { id: 'A3', label: 'A3' },
-  { id: 'B1', label: 'B1' },
-  { id: 'B2', label: 'B2' },
-  { id: 'B3', label: 'B3' },
-  { id: 'C1', label: 'C1' },
-  { id: 'C2', label: 'C2' },
-  { id: 'C3', label: 'C3' },
+  { id: 'A1', label: 'A1', x:5, y:0 },
+  { id: 'A2', label: 'A2', x:5, y:1 },
+  { id: 'A3', label: 'A3', x:5, y:2},
+  { id: 'B1', label: 'B1', x:5, y:3 },
+  { id: 'B2', label: 'B2', x:5, y:4 },
+  { id: 'B3', label: 'B3', x:5, y:5 },
+  { id: 'C1', label: 'C1', x:5, y:6 },
+  { id: 'C2', label: 'C2', x:5, y:7 },
+  { id: 'C3', label: 'C3', x:5, y:8 },
 ];
 
 function BookTable() {
@@ -23,7 +23,9 @@ function BookTable() {
 
     const { data, error } = await supabase
       .from('user_table') // 실제 테이블명에 맞게 수정하세요
-      .insert([{ task_id: seat.id }]);
+      .insert([{ task_id: seat.id ,
+      tablex: seat.x,
+      tabley: seat.y}]);
 
     setLoading(false);
 
